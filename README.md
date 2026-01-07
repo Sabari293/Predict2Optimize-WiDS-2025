@@ -1,27 +1,105 @@
 # Predict2Optimize — WiDS 2025  
 **Predicting Market Dynamics for Data-Driven Portfolio Optimization**
 
-## Overview
-In this project, you will build a simple end-to-end pipeline:
 
-> **data → features → prediction → optimization → backtesting**
+# Week 1 — Financial Data & Feature Extraction
+## Week 1: Financial Time Series Analysis
+## Data Source
+- **Yahoo Finance (`yfinance`)**
+- Assets used:AAPL, MSFT, GOOG, AMZN, TSLANVDA (Tasks 5 & 6)
+### Preprocessing
+- Used *Adjusted Close* prices
+- Missing values handled via forward-fill and back-fill
+- Summary statistics obtained using `df.describe()`
 
-By Week 5, you will be able to produce predicted returns, optimize a portfolio using those predictions, and evaluate performance over time.
+---
+## Task 1: Setup
+
+**Key Steps**
+- Download long-term and medium-term data
+- Extract adjusted close prices
+- Handle missing values
+- Compute summary statistics
 
 ---
 
-# Week 1 — Financial Data & Feature Extraction
-**Goals**
-- Become familiar with NumPy, Pandas, Matplotlib.
-- Download daily price data using `yfinance`.
-- Compute daily returns and construct basic rolling features.
+## Task 2: Basic Trends & Returns
 
-**Tasks**
-- Load and inspect price data.  
-- Handle missing values.  
-- Compute log returns.  
-- Build simple rolling features (5-day return, 20-day volatility, 10-day momentum).  
-- Visualize prices, returns, and features.
+**Objective**
+Analyze short-term trends, returns, and volatility.
+
+**Computed Metrics**
+- Simple returns
+- Log returns
+- Rolling volatility
+
+**Plots**
+- Price vs 20-day moving average
+- Log returns time series
+- Rolling volatility comparison
+
+**Observations**
+- Prices closely track moving averages
+- Volatility spikes during market stress (COVID)
+
+---
+
+## Task 3: Stationarity Analysis
+
+**Objective**
+To check whether returns are stationary.
+
+**Methods**
+- Rolling mean & rolling standard deviation (20, 60, 120 days)
+- Augmented Dickey-Fuller (ADF) test
+
+**Results**
+- Mean of log returns is approximately stationary
+- Variance is time-varying (volatility clustering)
+- ADF test rejects non-stationarity (p < 0.05)
+
+---
+
+## Task 4: Volatility Regimes
+
+**Objective**
+Studied volatility clustering and crisis behavior.
+
+**Volatility Estimators**
+- 20-day rolling volatility
+- EWMA volatility (λ = 0.94)
+
+**Key Findings**
+- EWMA is smoother and reacts faster to crashes
+- EWMA is better suited for risk management
+- Standardized returns have variance close to 1
+
+---
+
+## Task 5: Time Horizons and the “Normal” Illusion
+
+**Objective**
+Understand how return distributions change with time aggregation.
+
+**Results**
+| Horizon | Skewness | Kurtosis |
+|------|---------|----------|
+| Daily | -0.16 | 4.50 |
+| Weekly | 0.08 | 1.30 |
+| Monthly | 0.39 | 0.60 |
+
+**Observations**
+- Daily returns have fat tails
+- Kurtosis decreases with longer horizons
+
+---
+
+## Task 6: Smart Investing
+**Problem**
+How many **RTX 4090 GPUs (~$1600 each)** could be bought today if $1000 was invested in **NVIDIA** on my birth date?
+
+**Result**
+- Equivalent to **~181 RTX 4090 GPUs**
 
 ---
 
@@ -37,46 +115,6 @@ By Week 5, you will be able to produce predicted returns, optimize a portfolio u
   - linear or ridge regression  
   - optional tree-based model (e.g., XGBoost)  
 - Evaluate using standard regression metrics.
-
----
-
-# Week 3 — Neural Networks and Walk-Forward Prediction
-**Goals**
-- Train a small MLP to predict returns.
-- Set up a rolling, walk-forward evaluation loop.
-
-**Tasks**
-- Implement a small feedforward network in PyTorch.  
-- Normalize features; apply early stopping.  
-- Perform walk-forward prediction:  
-  **train on past → predict next segment → advance window → repeat**.
-
----
-
-# Week 4 — Portfolio Optimization
-**Goals**
-- Convert predicted returns into portfolio weights via Markowitz optimization.
-- Experiment with different covariance estimates.
-
-**Tasks**
-- Estimate covariance of returns.  
-- Use `cvxpy` to solve long-only Markowitz optimization.  
-- Compare to PyPortfolioOpt’s implementation.  
-- Analyze how weights change under different covariance estimators.
-
----
-
-# Week 5 — Integration and Final Backtest
-**Goals**
-- Combine your predictor with your optimizer into a full pipeline.
-- Evaluate the strategy over time and interpret results.
-
-**Tasks**
-- For each period:  
-  **predict returns → compute optimal weights → update portfolio value**  
-- Plot cumulative returns.  
-- Plot an efficient frontier for a chosen date.  
-- Write a short summary of results and limitations.
 
 ---
 
