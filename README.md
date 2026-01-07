@@ -1,9 +1,7 @@
 # Predict2Optimize — WiDS 2025  
 **Predicting Market Dynamics for Data-Driven Portfolio Optimization**
 
-
-# Week 1 — Financial Data & Feature Extraction
-## Week 1: Financial Time Series Analysis
+# Week 1: Financial Time Series Analysis
 ## Data Source
 - **Yahoo Finance (`yfinance`)**
 - Assets used:AAPL, MSFT, GOOG, AMZN, TSLANVDA (Tasks 5 & 6)
@@ -104,17 +102,107 @@ How many **RTX 4090 GPUs (~$1600 each)** could be bought today if $1000 was inve
 ---
 
 # Week 2 — Baseline Models and Linear Predictors
-**Goals**
-- Predict next-day returns using simple regression models.
-- Establish performance baselines.
+##  Feature Construction
 
-**Tasks**
-- Use time-ordered train/test splits.  
-- Implement:  
-  - mean predictor (baseline)  
-  - linear or ridge regression  
-  - optional tree-based model (e.g., XGBoost)  
-- Evaluate using standard regression metrics.
+The following features were constructed:
+
+- `r_t`
+- `r_{t-1}`
+- 20-day rolling mean of returns
+- 20-day rolling volatility of returns
+- 5-day momentum 
+
+**Target**
+- Next-day log return: `r_{t+1}`
+
+---
+
+##  Naive Baseline Models
+
+Two naive baselines were implemented:
+
+1. **Zero Predictor**
+   - Predicts zero return every day
+2. **Rolling Mean Predictor**
+   - Predicts the past 20-day average return
+
+These serve as **minimum performance benchmarks**.
+
+---
+
+##  Linear Model (OLS)
+
+- Model: **Ordinary Least Squares (Linear Regression)**
+- Inputs: engineered features
+- Output: next-day return
+  
+---
+
+##  Tree-Based Model (Random Forest)
+
+- Model: Random Forest Regressor
+- Parameters:
+  - 100 trees
+  - Max depth = 5
+  - Minimum samples per leaf = 50
+
+---
+
+##  Walk-Forward (Time-Series) Evaluation
+
+**Evaluation Strategy**
+- Used `TimeSeriesSplit`
+- We train past data and test it on future data
+
+This avoids **data leakage**, which makes random train-test splits invalid for time-series forecasting.
+
+---
+
+##  Model Performance
+
+### RMSE Comparison
+
+| Model | RMSE |
+|-----|-----|
+| Zero Predictor | ~0.01831 |
+| Rolling Mean | ~0.01855 |
+| Linear | ~0.01815 |
+| Random Forest | ~0.01819 |
+
+- All models perform similarly
+- Linear model slightly outperforms others
+
+---
+
+### Rolling RMSE Analysis
+
+- Rolling RMSE (window = 100 days) plotted over time
+- All models experience sharp error spikes during:
+  - High-volatility
+  - COVID crash (Feb–Mar 2020)
+
+This highlights **model fragility during market stress**.
+
+---
+
+##  Volatility-Scaled Error
+
+**Average Vol-Scaled Error**
+- Zero: ~0.82
+- Rolling Mean: ~0.84
+- Linear: ~0.81
+- Random Forest: ~0.81
+
+---
+
+##  Bonus: Toy Trading Strategy
+
+- Go **long (+1)** if predicted return > 0
+- Go **short (−1)** if predicted return < 0
+
+**Results**
+- Linear and Random Forest models generate higher cumulative returns
+- Performance degrades during volatile periods
 
 ---
 
